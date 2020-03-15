@@ -1,0 +1,33 @@
+# ===================================================================
+# Standard Spring Boot properties.
+# Full reference is available at:
+# http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+# ===================================================================
+
+management:
+  metrics:
+    export:
+      prometheus:
+        enabled: true # enabling prometheus format metrics
+    distribution:
+      percentiles-histogram:
+        all: true
+      percentiles:
+         all: 0, 0.5, 0.75, 0.95, 0.99, 1.0
+  endpoints:
+    web:
+      # by default Spring expose actuator endpoints on /actuator/ path but prometheus needs it be on /
+      base-path: /
+      exposure:
+        include: "*"
+
+spring:
+  application:
+    name: Oauth2
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate.jdbc.time_zone: UTC
+    hibernate:
+      ddl-auto: update
+
