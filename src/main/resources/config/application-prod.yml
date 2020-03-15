@@ -5,10 +5,10 @@
 # ===================================================================
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/springdb
+    url: ${DATABASE_URL}
     type: com.zaxxer.hikari.HikariDataSource
-    username: postgres
-    password: postgres
+    username: ${USERNAME_POSTGRES}
+    password: ${PASSWORD_POSTGRES}
     hikari:
       pool-name: Hiraki
       auto-commit: false
@@ -22,7 +22,7 @@ spring:
     database: POSTGRESQL
     show-sql: false
 server:
-  port: ${PORT}
+  port: ${PORT:8081}
   compression:
     enabled: true
     mime-types: text/html,text/xml,text/plain,text/css, application/javascript, application/json

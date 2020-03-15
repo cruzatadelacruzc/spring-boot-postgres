@@ -12,10 +12,10 @@ spring:
     livereload:
       enabled: true
   datasource:
-    url: jdbc:postgresql://localhost:5433/springdb
+    url: ${DATABASE_URL}
     type: com.zaxxer.hikari.HikariDataSource
-    username: postgres
-    password: postgres
+    username: ${USERNAME-POSTGRES}
+    password: ${PASSWORD-POSTGRES}
     hikari:
       pool-name: Hiraki
       auto-commit: false
@@ -29,4 +29,4 @@ spring:
     database: POSTGRESQL
     show-sql: true
 server:
-  port: 8080
+  port: ${PORT:8080}
