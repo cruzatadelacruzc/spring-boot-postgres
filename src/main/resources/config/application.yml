@@ -5,21 +5,41 @@
 # ===================================================================
 
 management:
+  endpoints:
+    web:
+      base-path: /management
+      exposure:
+        include: ['configprops', 'env', 'health', 'info', 'jhimetrics', 'logfile', 'loggers', 'prometheus', 'threaddump']
+  endpoint:
+    health:
+      show-details: when-authorized
+      roles: 'ROLE_ADMIN'
+    jhimetrics:
+      enabled: true
   metrics:
     export:
       prometheus:
         enabled: true # enabling prometheus format metrics
+        step: 60
+    enable:
+      http: true
+      jvm: true
+      logback: true
+      process: true
+      system: true
     distribution:
       percentiles-histogram:
         all: true
       percentiles:
          all: 0, 0.5, 0.75, 0.95, 0.99, 1.0
-  endpoints:
-    web:
-      # by default Spring expose actuator endpoints on /actuator/ path but prometheus needs it be on /
-      base-path: /
-      exposure:
-        include: "*"
+    tags:
+      application: ${spring.application.name}
+      web:
+        server:
+          auto-time-requests: true
+  info:
+    git:
+      mode: full
 
 spring:
   application:
