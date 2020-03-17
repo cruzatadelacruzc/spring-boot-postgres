@@ -23,15 +23,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .authorizeRequests().anyRequest().authenticated()
+                    .authorizeRequests()
+                        .antMatchers("/management/health").permitAll()
+                        .antMatchers("/management/info").permitAll()
+                        .antMatchers("/management/prometheus").permitAll()
+                        .antMatchers("/management/**").permitAll()
+                        .antMatchers("/api/**").authenticated()
+                        .antMatchers("/swagger-ui.html").authenticated()
                 .and()
-                .httpBasic();
+                    .httpBasic();
     }
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication().withUser("user").password(passwordEncoder().encode("user.*")).roles("USER")
-        .and()
-        .withUser("admin").password(passwordEncoder().encode("admin.*")).roles("USER","ADMIN");
+                .and()
+                .withUser("admin").password(passwordEncoder().encode("admin.*")).roles("USER", "ADMIN");
     }
 }
