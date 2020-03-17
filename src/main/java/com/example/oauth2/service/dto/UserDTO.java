@@ -1,26 +1,35 @@
 package com.example.oauth2.service.dto;
 
 import com.example.oauth2.domain.User;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
+@ApiModel(value = "User transformation", description = "Data Transformation Object")
 public class UserDTO {
 
+    @ApiModelProperty(value = "Identifier, only update operation")
     private Long id;
 
     @NotNull
+    @ApiModelProperty(example = "cmcruzata", value = "Username")
     private String username;
 
+    @ApiModelProperty(example = "cmcruzata", value = "Password")
     private String password;
 
     @NotNull
+    @ApiModelProperty(example = "Tu papa el inmortal", value = "Full name")
     private String fullname;
 
+    @ApiModelProperty(example = "true", value = "Active user")
     private Boolean active;
 
     @NotNull
     @Email
+    @ApiModelProperty(example = "cmcruzata@uci.cu", value = "Email")
     private String email;
 
     public UserDTO() {
