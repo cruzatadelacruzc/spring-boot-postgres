@@ -114,10 +114,10 @@ public class UserResourceIT {
     }
 
     @Test
+    @Transactional
     public void testGetUser() throws Exception {
         User userStored =  userService.createUser(userMapper.toDto(user));
-        restUserMockMvc.perform(get("/api/users/{username}", userStored.getUsername())
-                .contentType(MediaType.APPLICATION_JSON))
+        restUserMockMvc.perform(get("/api/users/{username}", userStored.getUsername()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.username").value(userStored.getUsername()))
@@ -128,17 +128,15 @@ public class UserResourceIT {
 
     @Test
     public void testNonExistingUser() throws Exception {
-        User userStored =  userService.createUser(userMapper.toDto(user));
-        restUserMockMvc.perform(get("/api/users/unknown")
-                .contentType(MediaType.APPLICATION_JSON))
+        restUserMockMvc.perform(get("/api/users/unknown"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
+    @Transactional
     public void testGetAllUsers() throws Exception {
         User userStored = userService.createUser(userMapper.toDto(user));
-        restUserMockMvc.perform(get("/api/users?sort=id,desc")
-                .contentType(MediaType.APPLICATION_JSON))
+        restUserMockMvc.perform(get("/api/users?sort=id,desc"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.[*].username").value(userStored.getUsername()))
@@ -148,13 +146,13 @@ public class UserResourceIT {
     }
 
     @Test
+    @Transactional
     public void testDeleteUser() throws Exception {
         User userStored = userService.createUser(userMapper.toDto(user));
         int initialDatabaseSize = userService.findAllUsers().size();
-        restUserMockMvc.perform(delete("/api/users/{username}", userStored.getUsername())
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        restUserMockMvc.perform(delete("/api/users/{username}", userStored.getUsername()))
                 .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.isDelete").value(true));
         List<UserDTO> userDTOList = userService.findAllUsers();
         assertThat(userDTOList.size()).isEqualTo(initialDatabaseSize -1);
