@@ -25,6 +25,7 @@
         <project.testresult.directory>${project.build.directory}/test-results</project.testresult.directory>
         <junit.utReportFolder>${project.testresult.directory}/test</junit.utReportFolder>
         <archunit-junit5.version>0.12.0</archunit-junit5.version>
+        <io.jsonwebtoken.version>0.10.7</io.jsonwebtoken.version>
         <org.apache.maven.plugins.version>3.6.0</org.apache.maven.plugins.version>
     </properties>
 
@@ -124,6 +125,15 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.1</version>
         </dependency>
     </dependencies>
 
