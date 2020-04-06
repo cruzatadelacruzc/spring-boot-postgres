@@ -30,3 +30,21 @@ spring:
     show-sql: true
 server:
   port: ${PORT:8080}
+# ===================================================================
+# Custom properties
+# ===================================================================
+app:
+  security:
+    authentication:
+      jwt:
+        # Token is valid 6 journals hours
+        token-validity-in-seconds: 21600
+        # This token must be encoded using Base64 and be at least 256 bits long (you can type `openssl rand -base64 64` on your command line to generate a 512 bits one)
+        token-secret: nF5M+pcwINsS+DLqZAMHKlrdZvz3S4qRfmp7dZUdWxmmciWgydxYaCqymaLxdoy2hjInYQicaqNffpXjZQxnIw==
+    oauth2:
+      authorizedRedirectUris:
+        # After successfully authenticating with the OAuth2 Provider,
+        # we'll be generating an auth token for the user and sending the token to the
+        # redirectUri mentioned by the frontend client in the /oauth2/authorize request.
+        # We're not using cookies because they won't work well in mobile clients.
+        - http://localhost:3000/oauth2/redirect

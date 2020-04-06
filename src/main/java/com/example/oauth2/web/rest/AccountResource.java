@@ -25,9 +25,9 @@ import java.util.Optional;
 @Api(tags = {"User resource"})
 @RestController
 @RequestMapping(value = "/api")
-public class UserResource {
+public class AccountResource {
 
-    private final Logger log = LoggerFactory.getLogger(UserResource.class);
+    private final Logger log = LoggerFactory.getLogger(AccountResource.class);
 
     private final String ROLE_ADMIN = "ROLE_ADMIN";
 
@@ -35,7 +35,7 @@ public class UserResource {
 
     private final UserService userService;
 
-    public UserResource(UserService userService) {
+    public AccountResource(UserService userService) {
         this.userService = userService;
     }
 
@@ -48,11 +48,10 @@ public class UserResource {
      */
     @PostMapping("/users")
     @ApiOperation(value = "Create a user", response = UserDTO.class)
-    @PreAuthorize("hasRole(\"" + ROLE_ADMIN + "\")")
     public ResponseEntity<User> createUser(@Valid @RequestBody UserDTO userDto) throws URISyntaxException {
         log.debug("REST request to save User : {}", userDto);
         User newUser = userService.createUser(userDto);
-        return ResponseEntity.created(new URI("/api/users/" + newUser.getUsername()))
+        return ResponseEntity.created(new URI("/api/users/" + newUser.getEmail()))
                 .body(newUser);
     }
 
@@ -75,15 +74,15 @@ public class UserResource {
     /**
      * {@code GET /users/:login} : get the "login" user.
      *
-     * @param username the login of the user to delete.
+     * @param email the email to get a user .
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the "login" user.
      */
-    @ApiOperation(value = "Get a user by username", response = UserDTO.class)
-    @GetMapping("/users/{username}")
+    @ApiOperation(value = "Get a user by email", response = UserDTO.class)
+    @GetMapping("/users/{email}/email")
     @PreAuthorize("hasRole(\"" + ROLE_USER + "\")")
-    public ResponseEntity getUser(@PathVariable String username) {
-        log.debug("REST request to get User: {}", username);
-        Optional<UserDTO> result = userService.getUserByUsername(username);
+    public ResponseEntity<UserDTO> getUser(@PathVariable String email) {
+        log.debug("REST request to get User: {}", email);
+        Optional<UserDTO> result = userService.getUserByEmail(email);
         return result.map(ResponseEntity::ok).orElse(new ResponseEntity(HttpStatus.NOT_FOUND));
     }
 
@@ -91,16 +90,16 @@ public class UserResource {
     /**
      * {@code DELETE /users/:login} : delete the "login" User.
      *
-     * @param username the login of the user to delete.
+     * @param email the login of the user to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
-    @DeleteMapping("/users/{username}")
+    @DeleteMapping("/users/{email}/email")
     @ApiOperation(value = "Delete a user")
     @PreAuthorize("hasRole(\"" + ROLE_ADMIN + "\")")
-    public ResponseEntity<Map> deleteUser(@PathVariable String username) {
-        log.debug("REST request to delete User: {}", username);
+    public ResponseEntity<Map> deleteUser(@PathVariable String email) {
+        log.debug("REST request to delete User: {}", email);
         Map<String, Boolean> response = new HashMap<>();
-        boolean result = userService.deleteUser(username);
+        boolean result = userService.deleteUser(email);
         response.put("isDelete", result);
         return ResponseEntity.ok(response);
     }

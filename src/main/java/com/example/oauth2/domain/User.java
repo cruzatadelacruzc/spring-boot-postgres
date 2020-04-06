@@ -17,18 +17,23 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    private String username;
-
     private String password;
 
+    private String imageUrl;
+
     @NotNull
-    private String fullname;
+    private String name;
 
     private Boolean active;
 
     @NotNull
     private String email;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private AuthProvider provider;
+
+    private String providerId;
 
     @CreatedDate
     @Column(name = "created_date", updatable = false)
@@ -49,15 +54,6 @@ public class User implements Serializable {
         return this;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public User setUsername(String username) {
-        this.username = username;
-        return this;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -67,12 +63,21 @@ public class User implements Serializable {
         return this;
     }
 
-    public String getFullname() {
-        return fullname;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public User setFullname(String fullname) {
-        this.fullname = fullname;
+    public User setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+        return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public User setName(String name) {
+        this.name = name;
         return this;
     }
 
@@ -91,6 +96,24 @@ public class User implements Serializable {
 
     public User setEmail(String email) {
         this.email = email;
+        return this;
+    }
+
+    public AuthProvider getProvider() {
+        return provider;
+    }
+
+    public User setProvider(AuthProvider provider) {
+        this.provider = provider;
+        return this;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public User setProviderId(String providerId) {
+        this.providerId = providerId;
         return this;
     }
 
@@ -132,11 +155,13 @@ public class User implements Serializable {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", fullname='" + fullname + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", name='" + name + '\'' +
                 ", active=" + active +
                 ", email='" + email + '\'' +
+                ", provider=" + provider +
+                ", providerId='" + providerId + '\'' +
                 ", createdDate=" + createdDate +
                 ", lastModifiedDate=" + lastModifiedDate +
                 '}';

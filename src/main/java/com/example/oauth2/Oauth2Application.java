@@ -1,11 +1,13 @@
 package com.example.oauth2;
 
+import com.example.oauth2.config.AppProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.env.Environment;
 
 import java.net.InetAddress;
@@ -16,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SpringBootApplication
+@EnableConfigurationProperties({AppProperties.class})
 public class Oauth2Application implements InitializingBean {
 
     private static final Logger log = LoggerFactory.getLogger(Oauth2Application.class);

@@ -6,7 +6,7 @@ import com.example.oauth2.service.UserService;
 import com.example.oauth2.service.dto.UserDTO;
 import com.example.oauth2.service.mapper.UserMapper;
 import com.example.oauth2.web.errors.ExceptionTranslator;
-import com.example.oauth2.web.rest.UserResource;
+import com.example.oauth2.web.rest.AccountResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(classes = Oauth2Application.class)
-public class UserResourceIT {
-    private static final String DEFAULT_USERNAME = "lucas";
-    private static final String UPDATED_USERNAME = "guido";
+public class AccountResourceIT {
 
     private static final String DEFAULT_PASSWORD = "passlucas";
     private static final String UPDATED_PASSWORD = "passguido";
@@ -60,8 +58,8 @@ public class UserResourceIT {
 
     @BeforeEach
     public void setUp() {
-        UserResource userResource = new UserResource(userService);
-        this.restUserMockMvc = MockMvcBuilders.standaloneSetup(userResource)
+        AccountResource accountResource = new AccountResource(userService);
+        this.restUserMockMvc = MockMvcBuilders.standaloneSetup(accountResource)
                 .setCustomArgumentResolvers(pageableArgumentResolver)
                 .setControllerAdvice(exceptionTranslator)
                 .setMessageConverters(jacksonMessageConverter)
@@ -71,9 +69,8 @@ public class UserResourceIT {
     @BeforeEach
     public void init() {
         this.user = new User();
-        user.setUsername(DEFAULT_USERNAME);
         user.setEmail(DEFAULT_EMAIL);
-        user.setFullname(DEFAULT_FULLAME);
+        user.setName(DEFAULT_FULLAME);
         user.setActive(true);
         user.setPassword(DEFAULT_PASSWORD);
     }
@@ -90,14 +87,13 @@ public class UserResourceIT {
         List<UserDTO> userDTOList = userService.findAllUsers();
         assertThat(initialDatabaseSize).isEqualTo(userDTOList.size() - 1);
         UserDTO userDTO = userDTOList.get(userDTOList.size() - 1);
-        assertThat(userDTO.getUsername()).isEqualTo(DEFAULT_USERNAME);
         assertThat(userDTO.getEmail()).isEqualTo(DEFAULT_EMAIL);
-        assertThat(userDTO.getFullname()).isEqualTo(DEFAULT_FULLAME);
+        assertThat(userDTO.getName()).isEqualTo(DEFAULT_FULLAME);
     }
 
     @Test
     public void testCreateUserWithNullUsername() throws Exception {
-        user.setUsername(null);
+        user.setEmail(null);
         restUserMockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(TestUtil.convertObjectToJsonBytes(this.user)))
@@ -117,12 +113,11 @@ public class UserResourceIT {
     @Transactional
     public void testGetUser() throws Exception {
         User userStored =  userService.createUser(userMapper.toDto(user));
-        restUserMockMvc.perform(get("/api/users/{username}", userStored.getUsername()))
+        restUserMockMvc.perform(get("/api/users/{email}/email", userStored.getEmail()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.username").value(userStored.getUsername()))
                 .andExpect(jsonPath("$.email").value(userStored.getEmail()))
-                .andExpect(jsonPath("$.fullname").value(userStored.getFullname()))
+                .andExpect(jsonPath("$.name").value(userStored.getName()))
                 .andExpect(jsonPath("$.active").value(userStored.getActive()));
     }
 
@@ -139,9 +134,8 @@ public class UserResourceIT {
         restUserMockMvc.perform(get("/api/users?sort=id,desc"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.[*].username").value(userStored.getUsername()))
                 .andExpect(jsonPath("$.[*].email").value(userStored.getEmail()))
-                .andExpect(jsonPath("$.[*].fullname").value(userStored.getFullname()))
+                .andExpect(jsonPath("$.[*].name").value(userStored.getName()))
                 .andExpect(jsonPath("$.[*].active").value(userStored.getActive()));
     }
 
@@ -150,7 +144,7 @@ public class UserResourceIT {
     public void testDeleteUser() throws Exception {
         User userStored = userService.createUser(userMapper.toDto(user));
         int initialDatabaseSize = userService.findAllUsers().size();
-        restUserMockMvc.perform(delete("/api/users/{username}", userStored.getUsername()))
+        restUserMockMvc.perform(delete("/api/users/{email}/email", userStored.getEmail()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.isDelete").value(true));
@@ -170,8 +164,7 @@ public class UserResourceIT {
         assertThat(userToUpdate.isPresent()).isTrue();
 
         userToUpdate.get().setPassword(UPDATED_PASSWORD);
-        userToUpdate.get().setUsername(UPDATED_USERNAME);
-        userToUpdate.get().setFullname(UPDATED_FULLNAME);
+        userToUpdate.get().setName(UPDATED_FULLNAME);
         userToUpdate.get().setEmail(UPDATED_EMAIL);
         userToUpdate.get().setActive(false);
 
@@ -184,9 +177,8 @@ public class UserResourceIT {
         assertThat(initialDatabaseSize).isEqualTo(userDTOList.size());
         UserDTO userDTO = userDTOList.get(userDTOList.size() - 1);
 
-        assertThat(userDTO.getUsername()).isEqualTo(UPDATED_USERNAME);
         assertThat(userDTO.getEmail()).isEqualTo(UPDATED_EMAIL);
-        assertThat(userDTO.getFullname()).isEqualTo(UPDATED_FULLNAME);
+        assertThat(userDTO.getName()).isEqualTo(UPDATED_FULLNAME);
         assertThat(userDTO.getActive()).isEqualTo(false);
     }
 }

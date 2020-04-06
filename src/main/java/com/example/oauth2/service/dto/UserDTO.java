@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @ApiModel(value = "User transformation", description = "Data Transformation Object")
@@ -14,32 +14,30 @@ public class UserDTO {
     @ApiModelProperty(value = "Identifier, only update operation")
     private Long id;
 
-    @NotNull
-    @ApiModelProperty(example = "cmcruzata", value = "Username")
-    private String username;
-
     @ApiModelProperty(example = "cmcruzata", value = "Password")
     private String password;
 
-    @NotNull
+    @NotBlank
     @ApiModelProperty(example = "Tu papa el inmortal", value = "Full name")
-    private String fullname;
+    private String name;
 
     @ApiModelProperty(example = "true", value = "Active user")
     private Boolean active;
 
-    @NotNull
+    @NotBlank
     @Email
     @ApiModelProperty(example = "cmcruzata@uci.cu", value = "Email")
     private String email;
+
+    @ApiModelProperty(value = "Image url")
+    private String imageUrl;
 
     public UserDTO() {
     }
 
     public UserDTO(User user) {
         this.id = user.getId();
-        this.username = user.getUsername();
-        this.fullname = user.getFullname();
+        this.name = user.getName();
         this.active = user.getActive();
         this.email = user.getEmail();
     }
@@ -53,15 +51,6 @@ public class UserDTO {
         return this;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public UserDTO setUsername(String username) {
-        this.username = username;
-        return this;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -71,12 +60,12 @@ public class UserDTO {
         return this;
     }
 
-    public String getFullname() {
-        return fullname;
+    public String getName() {
+        return name;
     }
 
-    public UserDTO setFullname(String fullname) {
-        this.fullname = fullname;
+    public UserDTO setName(String name) {
+        this.name = name;
         return this;
     }
 
@@ -98,6 +87,15 @@ public class UserDTO {
         return this;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public UserDTO setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -116,11 +114,11 @@ public class UserDTO {
     public String toString() {
         return "UserDTO{" +
                 "id=" + id +
-                ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", fullname='" + fullname + '\'' +
+                ", name='" + name + '\'' +
                 ", active=" + active +
                 ", email='" + email + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
                 '}';
     }
 }

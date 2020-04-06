@@ -1,5 +1,6 @@
 package com.example.oauth2.service;
 
+import com.example.oauth2.domain.AuthProvider;
 import com.example.oauth2.domain.User;
 import com.example.oauth2.repositories.UserRepository;
 import com.example.oauth2.service.dto.UserDTO;
@@ -40,8 +41,12 @@ public class UserService {
      * @return User
      */
     public User createUser(UserDTO userDTO) {
+        if (userRepository.findByEmailIgnoreCase(userDTO.getEmail()).isPresent()){
+            throw new EmailAlreadyUsedException();
+        }
         User user1 = userMapper.toEntity(userDTO);
         user1.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        user1.setProvider(AuthProvider.local);
         userRepository.save(user1);
         log.debug("Created Information for User: {}", user1);
         return user1;
@@ -61,8 +66,7 @@ public class UserService {
                 .map(user -> {
                     user.setActive(userDTO.getActive());
                     user.setEmail(userDTO.getEmail());
-                    user.setFullname(userDTO.getFullname());
-                    user.setUsername(userDTO.getUsername());
+                    user.setName(userDTO.getName());
                     user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
                     log.debug("Changed Information for User: {}", user);
                     return user;
@@ -92,21 +96,21 @@ public class UserService {
 
     /**
      * Get a User given a username
-     * @param username Username of the user
+     * @param email Email of the user
      * @return UserDTO if exists
      */
     @Transactional(readOnly = true)
-    public Optional<UserDTO> getUserByUsername(String username){
-        return userRepository.findByUsername(username).map(userMapper::toDto);
+    public Optional<UserDTO> getUserByEmail(String email){
+        return userRepository.findByEmail(email).map(userMapper::toDto);
     }
 
     /**
      * Delete a User given login
      *
-     * @param username username of the user
+     * @param email Email of the user
      */
-    public boolean deleteUser(String username) {
-        Optional<User> user = userRepository.findByUsername(username);
+    public boolean deleteUser(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
         if (user.isPresent()) {
             userRepository.delete(user.get());
             log.debug("Deleted User: {}", user);

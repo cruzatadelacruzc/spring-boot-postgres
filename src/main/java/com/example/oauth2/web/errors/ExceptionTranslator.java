@@ -1,9 +1,13 @@
 package com.example.oauth2.web.errors;
 
+import com.example.oauth2.security.UnauthorizedRedirectUriException;
+import com.example.oauth2.web.util.HeaderUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.zalando.problem.DefaultProblem;
 import org.zalando.problem.Problem;
@@ -23,13 +27,16 @@ public class ExceptionTranslator  implements ProblemHandling, SecurityAdviceTrai
 
     private static final String MESSAGE_KEY = "message";
 
+    @Value("${app.clientApp.name}")
+    private String applicationName;
+
     /**
      * Post-process the Problem payload to add the message key for the front-end if needed.
      */
     @Override
     public ResponseEntity<Problem> process(@Nullable ResponseEntity<Problem> entity, NativeWebRequest request) {
         if (entity == null) {
-            return entity;
+            return null;
         }
 
         Problem problem = entity.getBody();
@@ -74,5 +81,10 @@ public class ExceptionTranslator  implements ProblemHandling, SecurityAdviceTrai
                 .with("fieldErrors", fieldErrors)
                 .build();
         return create(ex, problem, request);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Problem> handleUnauthorizedRedirectUriException(UnauthorizedRedirectUriException ex, NativeWebRequest request) {
+        return create(ex, request, HeaderUtil.createFailureAlert(applicationName, true, ex.getEntityName(), ex.getErrorKey(), ex.getMessage()));
     }
 }
